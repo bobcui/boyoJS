@@ -1,5 +1,4 @@
-
-var boyo.mvc.Facade = cc.Class.extend({
+boyo.mvc.Facade = cc.Class.extend({
 
     model: null,
     view: null,
@@ -10,7 +9,7 @@ var boyo.mvc.Facade = cc.Class.extend({
         this.model = new model;
         this.view = new view;
         this.controller = new controller;
-    }
+    },
 
     // model funcs
     addData: function(data) {
@@ -40,7 +39,7 @@ var boyo.mvc.Facade = cc.Class.extend({
 
     removeUI: function(uiName) {
         return this.view.removeUI(uiName);
-    },    
+    },
 
     hasUi: function(uiName) {
         return this.view.hasUi(uiName);

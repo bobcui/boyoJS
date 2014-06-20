@@ -1,23 +1,24 @@
-var boyo.mvc.Model = cc.Class.extend({
+boyo.mvc.Model = cc.Class.extend({
 
-    _dataMap = [],
+    _dataMap: [],
 
     addData: function(data) {
-        this._dataMap[data.dataName()] = data;
+        this._dataMap[data.getDataId()] = data;
         data.onAdd(this);
     },
 
-    getData: function(dataName) {
-        return this._dataMap[dataName];
+    getData: function(dataId) {
+        return this._dataMap[dataId];
     },
 
-    hasData: function(dataName) {
-        return this._dataMap[dataName] != null;
+    hasData: function(dataId) {
+        return this._dataMap[dataId] != null;
     },
 
-    removeData: function(dataName) {
-        var data = this._dataMap[dataName];
+    removeData: function(dataId) {
+        var data = this._dataMap[dataId];
         if (data) {
+            this._dataMap[dataId]= null;
             data.onRemove();
         }
         return data;

@@ -1,28 +1,29 @@
-var boyo.mvc.View = cc.Class.extend({
+boyo.mvc.View = cc.Class.extend({
 
-    _uiMap = [],
+    _uiMap: [],
 
     addUI: function(ui) {
-        this._uiMap[ui.getUIName()] = ui;
+        this._uiMap[ui.getUiId()] = ui;
         ui.onAdd(this);
     },
 
-    getUI: function(uiName) {
-        return this._uiMap[uiName];
+    getUI: function(uiId) {
+        return this._uiMap[uiId];
     },
 
-    removeUI: function(uiName)
+    removeUI: function(uiId)
     {
-        var ui = this._uiMap[uiName];
+        var ui = this._uiMap[uiId];
         if (ui) {
+            this._uiMap[uiId] = null;
             ui.onRemove();
         }
         return ui;
     },
 
-    hasUi: function(uiName) {
-        return this._uiMap[uiName] != null;
-    },
+    hasUi: function(uiId) {
+        return this._uiMap[uiId] != null;
+    }
 });
 
 boyo.mvc.View.getInstance = function() {

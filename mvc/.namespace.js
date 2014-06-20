@@ -1,1 +1,1 @@
-var boyo.mvc = boyo.mvc || {};
+boyo.mvc = boyo.mvc || {};

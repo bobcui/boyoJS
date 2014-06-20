@@ -1,9 +1,9 @@
-var boyo.mvc.UI = cc.Class.extend({
+boyo.mvc.Ui = cc.Class.extend({
 
-    _view = null,
+    _view: null,
 
-    getUIName: function() {
-        return 'boyo.mvc.UI'; /* class name as MediatorId conventionally*/
+    getUiId: function() {
+        return boyo.mvc.Ui;
     },
 
     onAdd: function(view) {

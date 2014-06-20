@@ -1,0 +1,1 @@
+boyo.net = boyo.net || {};

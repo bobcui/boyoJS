@@ -1,4 +1,4 @@
-var boyo.mvc.Controller = cc.Class.extend({
+boyo.mvc.Controller = cc.Class.extend({
     executeCommand: function(commandClassRef, args) {
         var commandInstance = new commandClassRef();
         commandInstance.execute(Array.prototype.slice.call(arguments, 1));

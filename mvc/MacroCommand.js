@@ -1,4 +1,4 @@
-var MacroCommand = cc.Class.extend({
+boyo.mvc.MacroCommand = cc.Class.extend({
 
     _subCommands: [],
 

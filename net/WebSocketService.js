@@ -15,7 +15,7 @@ var boyo.net.WebSocketService = boyo.net.Service.extend({
 		this._webSocket.onError = function(event) {
 
 		}
-
+		
 
 
 	}

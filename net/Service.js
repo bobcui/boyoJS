@@ -5,11 +5,11 @@ var boyo.net.Service = cc.Class.extend({
 	},
 
 	onPackage: function(package) {
-		cc.log('boyo.net.Service::onPackage() package=' + package);
+		boyo.log('boyo.net.Service::onPackage() package=' + package.toString());
 	},
 
 	onError: function(error) {
-		cc.log('boyo.net.Service::onError() error=' + error);
-	},
+		boyo.log('boyo.net.Service::onError() error=' + error.toString());
+	}
 
 });

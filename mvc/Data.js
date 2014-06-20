@@ -1,9 +1,9 @@
-var boyo.mvc.Data = cc.Class.extend({
+boyo.mvc.Data = cc.Class.extend({
 
     _model: null,
 
-    _getDataName: function() {
-        return 'boyo.mvc.Data'; /* return class name as Proxy Name conventionally*/
+    getDataId: function() {
+        return boyo.mvc.Data; /* return class name as Proxy Name conventionally*/
     },
 
     onAdd: function(model) {
