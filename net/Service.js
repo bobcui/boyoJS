@@ -1,4 +1,4 @@
-var boyo.net.Service = cc.Class.extend({
+boyo.net.Service = cc.Class.extend({
 
 	send: function(msg) {
 		throw new Error('method send not implement');

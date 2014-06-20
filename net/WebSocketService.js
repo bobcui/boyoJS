@@ -1,10 +1,16 @@
-var boyo.net.WebSocketService = boyo.net.Service.extend({
+boyo.net.WebSocketService = boyo.net.Service.extend({
 
+	_url: null,
+	_keepAlive: 0,
+	_lazyConnect: true,
 	_webSocket: null,
 
 	this._wsiSendBinary = new WebSocket("ws://echo.websocket.org");
 
-	ctor: function(url) {
+	ctor: function(url, config) {
+		this._url = url;
+
+
 		this._webSocket = new WebSocket(url);
 		this._webSocket.onOpen = function(event) {
 			cc.log('websocket[' +  +'']);
@@ -15,10 +21,12 @@ var boyo.net.WebSocketService = boyo.net.Service.extend({
 		this._webSocket.onError = function(event) {
 
 		}
-		
+	},
 
+	_initWebSocket: function() {
+		this._webSocket = new WebSocket(this._url);
 
-	}
+	},
 
 	send: function(msg) {
 		throw new Error('method send not implement');
@@ -33,26 +41,5 @@ var boyo.net.WebSocketService = boyo.net.Service.extend({
 	},
 
 
-
-
-bool WebSocket::init(const Delegate& delegate,
-                     const std::string& url,
-                     const std::vector<std::string>* protocols/* = nullptr*/)
-
-	onConnect: function() {
-
-	}
-
-
-
-
-
-	onPackage: function() {
-		return;
-	}
-
-	send: function(msg) {
-		return;
-	}
 
 });
