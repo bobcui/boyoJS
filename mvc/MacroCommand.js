@@ -8,7 +8,7 @@ boyo.mvc.MacroCommand = cc.Class.extend({
 
     execute: function(args) {
         for (var i = 0; i < this._subCommands.length; ++i) {
-            var commandInstance = new _subCommands[i];
+            var commandInstance = new this._subCommands[i];
             commandInstance.execute(Array.prototype.slice.call(arguments));            
         }
     }
