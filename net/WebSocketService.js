@@ -1,45 +1,130 @@
 boyo.net.WebSocketService = boyo.net.Service.extend({
 
 	_url: null,
-	_keepAlive: 0,
-	_lazyConnect: true,
+	_protocol: null,
+	_idleTimeout: -1,
+	_connectOnRequest: false,
+	_messages: [],
 	_webSocket: null,
+	_timeoutId: null,
+	_closed: false,
 
-	this._wsiSendBinary = new WebSocket("ws://echo.websocket.org");
-
-	ctor: function(url, config) {
+	ctor: function(url, protocol, config) {
 		this._url = url;
+		this._protocol = protocol;
+		config = config || {};		
+		this._idleTimeout = config.idleTimeout || this._idleTimeout;
+		this._connectOnRequest = config.connectOnRequest || this._connectOnRequest;
 
-
-		this._webSocket = new WebSocket(url);
-		this._webSocket.onOpen = function(event) {
-			cc.log('websocket[' +  +'']);
-		};
-		this._webSocket.onMessage = function(event) {
-
-		};
-		this._webSocket.onError = function(event) {
-
+		if (!this._connectOnRequest) {
+			this._initWebSocket();
 		}
 	},
 
+	send: function(message) {
+		if (this._closed) {
+			throw new Error('boyo.net.WebSocketService::send() WebSocketService already closed');
+		}
+
+		if (!this._webSocket) {
+			this._initWebSocket();
+		}
+
+		if (this._webSocket.readyState == WebSocket.OPEN) {
+			this._send(message);
+		}
+		else {
+			this._messages.push(message);
+		}
+	},
+
+	close: function() {
+		this._close();
+		this._closed = true;
+	},
+
+	clearUnsentMessages: function() {
+		this._messages = [];
+	},
+
+	onMessage: function(message) {},
+	onConnect: function(event) {},
+	onError: function(event) {},
+	onDisconnect: function(event) {},
+
 	_initWebSocket: function() {
-		this._webSocket = new WebSocket(this._url);
+		boyo.log('boyo.net.WebSocketService::_initWebSocket() url=[%s]', this._url);
 
+		this._webSocket = new WebSocket(this._url, this._protocol);
+		var self = this;
+
+		this._webSocket.onopen = function(event) {
+			boyo.log('boyo.net.WebSocketService::onConnect() url=[%s]', self._url);
+			if (self._webSocket.readyState == WebSocket.OPEN) {
+				self._flush();
+			}
+			self.onConnect(event);
+		};
+
+		this._webSocket.onmessage = function(event) {
+			// boyo.log('boyo.net.WebSocketService::onMessage() message=%j', message);			
+			this._updateTimeout();
+			self.onMessage(event.data);
+		};
+
+		this._webSocket.onerror = function(event) {
+			boyo.log('boyo.net.WebSocketService::onError() event=%j', event);
+			self.onError(event);
+			self._close();
+		};
+
+		this._webSocket.onclose = function(event) {
+			boyo.log('boyo.net.WebSocketService::onDisconnect() url=[%s]', self._url);
+			self.onDisconnect(event);
+			self._close();
+			if (!self._closed && !self._connectOnRequest) {
+				self._initWebSocket();
+			}
+		};
 	},
 
-	send: function(msg) {
-		throw new Error('method send not implement');
+	_close: function() {
+		if (this._webSocket) {
+			this._webSocket.close();
+			this._webSocket = null;
+		}
+		if (this._timeoutId) {
+			clearTimeout(this._timeoutId);
+			this._timeoutId = null;
+		}
+	},	
+
+	_send: function(message) {
+		this._webSocket.send(message);
+		this._updateTimeout();
 	},
 
-	onPackage: function(package) {
-		cc.log('boyo.net.Service::onPackage() package=' + package);
+	_flush: function() {
+		for (var i=0; i<this._messages.length; ++i) {
+			this._webSocket.send(this._messages[i]);
+		}
+		this._messages = [];
+		this._updateTimeout();
 	},
 
-	onError: function(error) {
-		cc.log('boyo.net.Service::onError() error=' + error);
-	},
+	_updateTimeout: function() {
+		if (this._idleTimeout < 0) {
+			return;
+		}
 
+		if (this._timeoutId) {
+			clearTimeout(this._timeoutId);
+		}
 
-
+		var self = this;
+		this._timeoutId = setTimeout(function() {
+			boyo.log('boyo.net.WebSocketService::_updateTimeout() connection timeout');
+			self._webSocket.close();
+		}, this._idleTimeout);
+	}
 });

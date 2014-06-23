@@ -1,15 +1,15 @@
 boyo.net.Service = cc.Class.extend({
 
-	send: function(msg) {
+	send: function(message) {
 		throw new Error('method send not implement');
 	},
 
-	onPackage: function(package) {
-		boyo.log('boyo.net.Service::onPackage() package=' + package.toString());
+	onMessage: function(message) {
+		boyo.log('boyo.net.Service::onMessage() message=%j', message);
 	},
 
 	onError: function(error) {
-		boyo.log('boyo.net.Service::onError() error=' + error.toString());
+		boyo.log('boyo.net.Service::onError() error=%j', error);
 	}
 
 });

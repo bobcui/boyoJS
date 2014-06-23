@@ -57,20 +57,30 @@ boyo.util = {
 	    return str;
 	},
 
-	log: function(args) {
-		cc.log(format(Array.prototype.slice.call(arguments)));
+	// 02/04 16:19:34
+	timestamp: function() {
+		function pad(n) {
+			return n < 10 ? '0' + n.toString(10) : n.toString(10);
+		};
+		var d = new Date();
+		var time = [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':');
+		return pad(d.getMonth()) + '/' + pad(d.getDate()) + ' ' + time;
+	},
+
+	log: function() {
+		cc.log([this.timestamp(), this.format.apply(this, Array.prototype.slice.call(arguments))].join(' - '));
 	},
 
 	warn: function(args) {
-		cc.warn(format(Array.prototype.slice.call(arguments)));
+		cc.warn([this.timestamp(), this.format.apply(this, Array.prototype.slice.call(arguments))].join(' - '));
 	},
 
 	error: function(args) {
-		cc.error(format(Array.prototype.slice.call(arguments)));
+		cc.error([this.timestamp(), this.format.apply(this, Array.prototype.slice.call(arguments))].join(' - '));
 	},
 
 	assert: function(cond, msg) {
-		cc.assert(cond, format(Array.prototype.slice.call(arguments, 1)));	
+		cc.assert(cond, this.format.apply(this, Array.prototype.slice.call(arguments, 1)));	
 	},
 
 	copyObject: function(src, dest) {
