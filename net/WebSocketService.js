@@ -2,7 +2,7 @@ boyo.net.WebSocketService = boyo.net.Service.extend({
 
 	_url: null,
 	_protocol: null,
-	_idleTimeout: -1,
+	_connectionTimeout: -1,
 	_connectOnRequest: false,
 	_messages: [],
 	_webSocket: null,
@@ -13,12 +13,18 @@ boyo.net.WebSocketService = boyo.net.Service.extend({
 		this._url = url;
 		this._protocol = protocol;
 		config = config || {};		
-		this._idleTimeout = config.idleTimeout || this._idleTimeout;
+		this._connectionTimeout = config.connectionTimeout || this._connectionTimeout;
 		this._connectOnRequest = config.connectOnRequest || this._connectOnRequest;
 
 		if (!this._connectOnRequest) {
 			this._initWebSocket();
 		}
+	},
+
+	close: function() {
+		this._messages = [];
+		this._close();	
+		this._closed = true;
 	},
 
 	send: function(message) {
@@ -38,18 +44,10 @@ boyo.net.WebSocketService = boyo.net.Service.extend({
 		}
 	},
 
-	close: function() {
-		this._close();
-		this._closed = true;
-	},
-
-	clearUnsentMessages: function() {
-		this._messages = [];
-	},
-
 	onMessage: function(message) {},
-	onConnect: function(event) {},
 	onError: function(event) {},
+
+	onConnect: function(event) {},
 	onDisconnect: function(event) {},
 
 	_initWebSocket: function() {
@@ -67,8 +65,8 @@ boyo.net.WebSocketService = boyo.net.Service.extend({
 		};
 
 		this._webSocket.onmessage = function(event) {
-			// boyo.log('boyo.net.WebSocketService::onMessage() message=%j', message);			
-			this._updateTimeout();
+			boyo.log('boyo.net.WebSocketService::onMessage() message=%j', message);			
+			self._updateTimeout();
 			self.onMessage(event.data);
 		};
 
@@ -100,6 +98,7 @@ boyo.net.WebSocketService = boyo.net.Service.extend({
 	},	
 
 	_send: function(message) {
+		boyo.log('boyo.net.WebSocketService::_send() send message=%j', message);		
 		this._webSocket.send(message);
 		this._updateTimeout();
 	},
@@ -113,18 +112,16 @@ boyo.net.WebSocketService = boyo.net.Service.extend({
 	},
 
 	_updateTimeout: function() {
-		if (this._idleTimeout < 0) {
-			return;
-		}
+		if (this._connectionTimeout > 0) {
+			if (this._timeoutId) {
+				clearTimeout(this._timeoutId);
+			}
 
-		if (this._timeoutId) {
-			clearTimeout(this._timeoutId);
+			var self = this;
+			this._timeoutId = setTimeout(function() {
+				boyo.log('boyo.net.WebSocketService::_updateTimeout() connection timeout');
+				self._webSocket.close();
+			}, this._connectionTimeout);
 		}
-
-		var self = this;
-		this._timeoutId = setTimeout(function() {
-			boyo.log('boyo.net.WebSocketService::_updateTimeout() connection timeout');
-			self._webSocket.close();
-		}, this._idleTimeout);
 	}
 });
